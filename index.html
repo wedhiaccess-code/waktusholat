@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#062a27" />
+    <title>Jadwal Sholat — Musholla Al-Falah 26</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "DM Sans", sans-serif;
+      }
+
+      body {
+        min-width: 320px;
+        background:
+          radial-gradient(ellipse at 76% 17%, rgba(240, 161, 85, 0.22), transparent 34rem),
+          radial-gradient(ellipse at 8% 74%, rgba(9, 107, 85, 0.18), transparent 30rem),
+          #041c1b;
+      }
+
+      .glass {
+        background: linear-gradient(145deg, rgba(5, 49, 44, 0.88), rgba(3, 31, 29, 0.88));
+        border: 1px solid rgba(42, 179, 143, 0.26);
+        box-shadow: 0 18px 55px rgba(0, 0, 0, 0.18), inset 0 1px rgba(255, 255, 255, 0.035);
+        backdrop-filter: blur(18px);
+      }
+
+      .sunrise {
+        background:
+          linear-gradient(180deg, rgba(4, 25, 24, 0.05), rgba(4, 25, 24, 0.24) 47%, #06211f 100%),
+          radial-gradient(ellipse at 67% 48%, rgba(255, 205, 130, 0.95) 0, rgba(247, 149, 89, 0.66) 12%, transparent 42%),
+          linear-gradient(125deg, #183b3c 5%, #49646a 36%, #c27e60 74%, #f6ba7a 100%);
+      }
+
+      .prayer-row {
+        transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+      }
+
+      .prayer-row.is-next {
+        color: #fff8e7;
+        border-color: rgba(245, 177, 68, 0.85);
+        background: linear-gradient(105deg, rgba(196, 111, 17, 0.9), rgba(106, 57, 11, 0.88));
+        box-shadow: 0 0 24px rgba(242, 157, 32, 0.15);
+      }
+
+      .serif {
+        font-family: "Playfair Display", Georgia, serif;
+      }
+
+      .cityline {
+        fill: rgba(4, 32, 31, 0.78);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-white antialiased">
+    <main class="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-5 p-4 sm:p-6 lg:gap-6 lg:p-8">
+      <header class="glass flex flex-col gap-5 rounded-3xl px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+        <div class="flex items-center gap-4">
+          <div class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-amber-300/10 text-amber-300">
+            <svg aria-hidden="true" viewBox="0 0 48 48" class="h-10 w-10 fill-current">
+              <path d="M24 3 28 9v3h5v8h7v24H8V20h7v-8h5V9l4-6Zm-2 12v5h4v-5h-4Zm-9 9v16h6V27h10v13h6V24h-8v-5h-6v5h-8Zm10 11v5h3v-5h-3Z" />
+            </svg>
+          </div>
+          <div>
+            <p class="serif text-2xl font-semibold leading-tight sm:text-[1.7rem]">Musholla Al-Falah 26</p>
+            <p id="location" class="mt-1 text-sm text-white/65">DKI Jakarta</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 sm:justify-end">
+          <div class="flex items-center gap-3">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="h-6 w-6 text-amber-300" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18m-13 4h3m3 0h2m-8 4h3" />
+            </svg>
+            <div>
+              <p id="date" class="font-semibold">Memuat tanggal…</p>
+              <p id="hijri" class="mt-0.5 text-sm text-white/60">Jadwal sholat harian</p>
+            </div>
+          </div>
+          <div class="hidden h-11 w-px bg-white/20 sm:block"></div>
+          <time id="clock" class="min-w-32 text-right text-3xl font-semibold tabular-nums tracking-tight sm:text-4xl">--:--:--</time>
+        </div>
+      </header>
+
+      <div class="grid flex-1 gap-5 lg:grid-cols-[minmax(290px,0.82fr)_minmax(0,2.18fr)] lg:gap-6">
+        <section aria-labelledby="prayer-heading" class="glass rounded-3xl p-4 sm:p-5">
+          <div class="mb-4 flex items-center justify-between px-1">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200/70">Hari ini</p>
+              <h1 id="prayer-heading" class="mt-1 text-xl font-semibold">Jadwal Sholat</h1>
+            </div>
+            <span class="rounded-full border border-white/10 px-3 py-1 text-xs text-white/65">WIB · Jakarta</span>
+          </div>
+          <div id="prayer-list" class="space-y-2" aria-live="polite">
+            <div class="rounded-2xl bg-white/[0.04] px-4 py-5 text-sm text-white/65">Mengambil jadwal sholat…</div>
+          </div>
+          <p id="api-status" class="mt-4 px-1 text-xs leading-relaxed text-white/45" role="status">Sumber: MuslimKita.id</p>
+        </section>
+
+        <div class="flex min-w-0 flex-col gap-5">
+          <section class="sunrise relative isolate flex min-h-[340px] flex-col justify-between overflow-hidden rounded-3xl border border-white/10 px-6 py-7 sm:min-h-[390px] sm:px-9 sm:py-8">
+            <div class="absolute inset-0 -z-10" aria-hidden="true">
+              <div class="absolute -right-8 top-8 h-48 w-48 rounded-full bg-amber-100/60 blur-[1px] sm:right-[23%] sm:top-12 sm:h-56 sm:w-56"></div>
+              <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#041c1b] via-[#041c1b]/60 to-transparent"></div>
+              <svg viewBox="0 0 1000 260" preserveAspectRatio="none" class="absolute inset-x-0 bottom-0 h-[58%] w-full">
+                <path class="cityline" d="M0 260V150h24v-38h9v38h18V90h11v60h15v-25h22v25h23v-70h9V53h5V38h6v15h5v42h10v-25h8v-9h6v9h8v57h21V82h8V64h5v18h12v85h18v-24h8v-30h8v30h8v24h16v-77h12v77h25v-39h12v-26h5v-28h7v28h7v26h10v39h16v-62h12v62h19v-30h9V73h6v-15h6v15h9v89h15v-45h8v-27h8v27h8v45h17v-93h13v93h18v-46h8v-21h8v21h8v46h21v-75h11v-25h6v-20h7v20h6v25h11v75h18v-40h9v-28h7v28h10v40h19v-62h10v-30h9v30h10v62h22v-43h9v-35h7v35h9v43h18v-91h11v-23h6v-15h7v15h7v23h10v91h20v-52h11v-20h8v20h10v52h21v-73h10v-32h8v32h8v73h27v-50h9v-32h7v32h10v50h21v-87h11v-24h6v-17h7v17h7v24h10v87h35v-64h11v-35h8v35h9v64h31v-93h11v-25h7v-19h7v19h7v25h12v93h32v-54h10v-34h9v34h10v54h35v-75h10v-28h9v28h9v75h50v-111h10V260Z" />
+                <path d="M135 260V143h15v-17h13v17h15v117m-51-97h51m245 97V173h28v-24l42-32 42 32v24h28v87m-117-87h117m-79 87v-46h41v46m110 0V119h18v-26l20-20 20 20v26h18v141m-76-119h76m-44 119v-49h15v49" fill="rgba(5,38,36,.92)" />
+                <path d="M395 174h28v-24l42-32 42 32v24h28v8H395Zm166-55h18V93l20-20 20 20v26h18v8h-76Z" fill="#0a3933" />
+              </svg>
+            </div>
+            <div class="relative flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-white/70">Cahaya dalam setiap waktu</p>
+                <h2 class="serif mt-3 max-w-lg text-4xl font-semibold leading-tight sm:text-5xl">Jadikan sholat,<br />penenang hati.</h2>
+                <p class="mt-3 max-w-sm text-sm leading-relaxed text-white/75 sm:text-base">Luangkan sejenak untuk kembali mengingat-Nya.</p>
+              </div>
+              <div class="hidden rounded-2xl border border-white/20 bg-black/10 px-4 py-3 text-right backdrop-blur-sm sm:block">
+                <p class="text-xs uppercase tracking-widest text-white/60">Kota</p>
+                <p id="hero-location" class="mt-1 font-semibold">Jakarta</p>
+              </div>
+            </div>
+            <div class="relative flex items-end justify-between gap-4">
+              <p class="serif max-w-sm text-sm italic text-white/75 sm:text-base">“Sesungguhnya sholat itu adalah kewajiban yang ditentukan waktunya atas orang-orang yang beriman.”</p>
+              <p class="shrink-0 text-xs text-white/60">QS. An-Nisa: 103</p>
+            </div>
+          </section>
+
+          <section aria-labelledby="next-heading" class="glass grid gap-5 rounded-3xl p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:px-7 sm:py-6">
+            <div class="flex items-center gap-4">
+              <div class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-amber-300/10 text-amber-300">
+                <svg aria-hidden="true" viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42M5 17h14M7 14a5 5 0 0 1 10 0" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">Menuju waktu sholat</p>
+                <h2 id="next-heading" class="mt-1 text-2xl font-semibold">Memuat jadwal…</h2>
+              </div>
+            </div>
+            <div class="text-left sm:text-right">
+              <p id="countdown" class="text-4xl font-semibold tabular-nums tracking-tight text-amber-100 sm:text-5xl">--:--:--</p>
+              <p id="next-time" class="mt-1 text-sm text-white/55">Sisa waktu · --:-- WIB</p>
+            </div>
+          </section>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <section class="glass rounded-3xl p-5 sm:p-6">
+              <div class="flex items-center gap-3">
+                <span class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-300/10 text-emerald-200">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 3 8l9 5 9-5-9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5" /></svg>
+                </span>
+                <h2 class="font-semibold">Jaga waktu sholat</h2>
+              </div>
+              <p class="mt-4 text-sm leading-relaxed text-white/60">“Amalan yang paling dicintai Allah adalah sholat pada waktunya.”</p>
+              <p class="mt-3 text-xs font-medium text-emerald-200/75">HR. Bukhari &amp; Muslim</p>
+            </section>
+            <section class="glass rounded-3xl p-5 sm:p-6">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="grid h-10 w-10 place-items-center rounded-xl bg-amber-300/10 text-amber-200">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  </span>
+                  <h2 class="font-semibold">Informasi jadwal</h2>
+                </div>
+                <button id="refresh" type="button" class="rounded-lg px-2 py-1 text-xs font-semibold text-amber-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-300">Perbarui</button>
+              </div>
+              <p class="mt-4 text-sm leading-relaxed text-white/60">Waktu sholat hari ini untuk <span id="info-location">Jakarta</span>, berdasarkan metode Kementerian Agama.</p>
+              <p class="mt-3 text-xs text-white/40">Data jadwal: MuslimKita.id</p>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <footer class="glass flex flex-col gap-4 rounded-3xl px-5 py-4 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+        <p class="font-medium text-white/80">Musholla Al-Falah 26 <span class="font-normal text-white/50">· DKI Jakarta</span></p>
+        <p>Semoga setiap langkah kita senantiasa dalam keberkahan.</p>
+        <a class="font-medium text-amber-200 transition hover:text-amber-100" href="https://www.muslimkita.id/developer/" target="_blank" rel="noreferrer">Tentang sumber data <span aria-hidden="true">↗</span></a>
+      </footer>
+    </main>
+
+    <script>
+      const API_URL = "https://www.muslimkita.id/api/jadwal-sholat/v1/jakarta/";
+      const prayers = [
+        { key: "imsak", name: "Imsak", icon: "☾" },
+        { key: "subuh", name: "Subuh", icon: "⌂", countsAsPrayer: true },
+        { key: "terbit", name: "Terbit", icon: "☀" },
+        { key: "dzuhur", name: "Dzuhur", icon: "☼", countsAsPrayer: true },
+        { key: "ashar", name: "Ashar", icon: "☀", countsAsPrayer: true },
+        { key: "maghrib", name: "Maghrib", icon: "☼", countsAsPrayer: true },
+        { key: "isya", name: "Isya", icon: "☾", countsAsPrayer: true },
+      ];
+      const jakartaTime = new Intl.DateTimeFormat("id-ID", {
+        timeZone: "Asia/Jakarta",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23",
+      });
+      let prayerData = null;
+      let nextPrayer = null;
+      let nextPrayerDate = null;
+
+      function getJakartaNow() {
+        const parts = new Intl.DateTimeFormat("en-GB", {
+          timeZone: "Asia/Jakarta",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hourCycle: "h23",
+        }).formatToParts(new Date());
+        return Object.fromEntries(parts.filter((part) => part.type !== "literal").map(({ type, value }) => [type, Number(value)]));
+      }
+
+      function toJakartaDate({ year, month, day }) {
+        return new Date(Date.UTC(year, month - 1, day));
+      }
+
+      function formatTime(time) {
+        return time.replace(".", ":");
+      }
+
+      function chooseNextPrayer() {
+        const now = getJakartaNow();
+        const today = toJakartaDate(now);
+        const currentSeconds = now.hour * 3600 + now.minute * 60 + now.second;
+        const candidates = prayers.filter((prayer) => prayer.countsAsPrayer);
+        nextPrayer = candidates.find((prayer) => {
+          const [hour, minute] = prayerData.jadwal[prayer.key].split(".").map(Number);
+          return hour * 3600 + minute * 60 > currentSeconds;
+        }) || candidates[0];
+        nextPrayerDate = new Date(today);
+        if (candidates.findIndex((prayer) => prayer.key === nextPrayer.key) === 0 &&
+            currentSeconds >= candidates.reduce((latest, prayer) => {
+              const [hour, minute] = prayerData.jadwal[prayer.key].split(".").map(Number);
+              return Math.max(latest, hour * 3600 + minute * 60);
+            }, 0)) {
+          nextPrayerDate.setUTCDate(nextPrayerDate.getUTCDate() + 1);
+        }
+      }
+
+      function renderPrayerList() {
+        const list = document.getElementById("prayer-list");
+        list.replaceChildren(...prayers.map((prayer) => {
+          const row = document.createElement("div");
+          const isNext = nextPrayer && prayer.key === nextPrayer.key;
+          row.className = `prayer-row flex items-center justify-between rounded-2xl border border-emerald-300/10 bg-white/[0.035] px-4 py-3 ${isNext ? "is-next" : ""}`;
+          if (isNext) row.setAttribute("aria-current", "time");
+          const name = document.createElement("span");
+          name.className = "flex items-center gap-3 text-[15px] font-medium";
+          const icon = document.createElement("span");
+          icon.className = `grid h-9 w-9 place-items-center rounded-xl text-xl ${isNext ? "text-amber-100" : "bg-white/[0.045] text-emerald-100/90"}`;
+          icon.setAttribute("aria-hidden", "true");
+          icon.textContent = prayer.icon;
+          name.append(icon, document.createTextNode(prayer.name));
+          const time = document.createElement("time");
+          time.className = "text-2xl font-semibold tabular-nums tracking-tight";
+          time.textContent = formatTime(prayerData.jadwal[prayer.key]);
+          row.append(name, time);
+          return row;
+        }));
+      }
+
+      function updateCountdown() {
+        if (!prayerData || !nextPrayer) return;
+        const nowParts = getJakartaNow();
+        const now = Date.UTC(nowParts.year, nowParts.month - 1, nowParts.day, nowParts.hour, nowParts.minute, nowParts.second);
+        const [hour, minute] = prayerData.jadwal[nextPrayer.key].split(".").map(Number);
+        const target = Date.UTC(nextPrayerDate.getUTCFullYear(), nextPrayerDate.getUTCMonth(), nextPrayerDate.getUTCDate(), hour, minute);
+        let remaining = Math.max(0, Math.floor((target - now) / 1000));
+        const hours = String(Math.floor(remaining / 3600)).padStart(2, "0");
+        remaining %= 3600;
+        const minutes = String(Math.floor(remaining / 60)).padStart(2, "0");
+        const seconds = String(remaining % 60).padStart(2, "0");
+        document.getElementById("clock").textContent = formatJakartaClock();
+        document.getElementById("countdown").textContent = `${hours}:${minutes}:${seconds}`;
+        document.getElementById("next-heading").textContent = nextPrayer.name;
+        document.getElementById("next-time").textContent = `Sisa waktu · ${formatTime(prayerData.jadwal[nextPrayer.key])} WIB`;
+
+        if (remaining === 0 && hours === "00" && minutes === "00") {
+          chooseNextPrayer();
+          renderPrayerList();
+        }
+      }
+
+      function renderDate() {
+        const dateValue = prayerData && /^\d{4}-\d{2}-\d{2}$/.test(prayerData.tanggal)
+          ? new Date(`${prayerData.tanggal}T12:00:00+07:00`)
+          : new Date();
+        document.getElementById("date").textContent = new Intl.DateTimeFormat("id-ID", {
+          timeZone: "Asia/Jakarta",
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }).format(dateValue);
+      }
+
+      function formatJakartaClock() {
+        const parts = jakartaTime.formatToParts(new Date());
+        const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map(({ type, value }) => [type, value]));
+        return `${values.hour}:${values.minute}:${values.second}`;
+      }
+
+      async function loadSchedule() {
+        const status = document.getElementById("api-status");
+        const button = document.getElementById("refresh");
+        button.disabled = true;
+        button.textContent = "Memuat…";
+        status.textContent = "Mengambil jadwal dari MuslimKita.id…";
+        try {
+          const response = await fetch(API_URL, { headers: { Accept: "application/json" } });
+          if (!response.ok) throw new Error(`Server merespons dengan status ${response.status}.`);
+          const data = await response.json();
+          const requiredPrayers = prayers.map(({ key }) => key);
+          if (!data.jadwal || requiredPrayers.some((key) => typeof data.jadwal[key] !== "string" || !/^\d{2}\.\d{2}$/.test(data.jadwal[key]))) {
+            throw new Error("Format jadwal dari API tidak sesuai.");
+          }
+          prayerData = data;
+          const city = data.kota || "DKI Jakarta";
+          document.getElementById("location").textContent = city;
+          document.getElementById("hero-location").textContent = city;
+          document.getElementById("info-location").textContent = city;
+          renderDate();
+          chooseNextPrayer();
+          renderPrayerList();
+          updateCountdown();
+          status.textContent = `Metode ${data.metode || "jadwal harian"} · Data oleh MuslimKita.id`;
+        } catch (error) {
+          status.textContent = `Jadwal gagal dimuat: ${error.message}`;
+          document.getElementById("prayer-list").innerHTML = '<p class="rounded-2xl border border-red-300/20 bg-red-400/10 px-4 py-5 text-sm text-red-100" role="alert">Tidak dapat memuat jadwal sholat. Periksa koneksi internet, lalu coba perbarui.</p>';
+          document.getElementById("next-heading").textContent = "Jadwal tidak tersedia";
+          document.getElementById("countdown").textContent = "--:--:--";
+          document.getElementById("next-time").textContent = "Coba muat ulang jadwal";
+        } finally {
+          button.disabled = false;
+          button.textContent = "Perbarui";
+        }
+      }
+
+      document.getElementById("refresh").addEventListener("click", loadSchedule);
+      renderDate();
+      updateCountdown();
+      loadSchedule();
+      window.setInterval(() => {
+        if (prayerData) {
+          const current = nextPrayer;
+          const nowParts = getJakartaNow();
+          const seconds = nowParts.hour * 3600 + nowParts.minute * 60 + nowParts.second;
+          const [hour, minute] = prayerData.jadwal[current.key].split(".").map(Number);
+          if (seconds >= hour * 3600 + minute * 60 && nextPrayerDate.toISOString().slice(0, 10) === toJakartaDate(nowParts).toISOString().slice(0, 10)) {
+            chooseNextPrayer();
+            renderPrayerList();
+          }
+          updateCountdown();
+        } else {
+          document.getElementById("clock").textContent = formatJakartaClock();
+        }
+      }, 1000);
+    </script>
+  </body>
+</html>
